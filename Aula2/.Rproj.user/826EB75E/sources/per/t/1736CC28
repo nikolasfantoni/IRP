@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1565985431126.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3975077130",
+    "id" : "1736CC28",
+    "lastKnownWriteTime" : 1566365531,
+    "last_content_update" : 1566365531997,
+    "path" : "D:/UFMG-sistemas/IRP/Aula1/Aula1.R",
+    "project_path" : "Aula1.R",
+    "properties" : {
+        "cursorPosition" : "0,20",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
