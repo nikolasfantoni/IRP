@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1566859125984.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "208B67BD",
+    "lastKnownWriteTime" : 1566600900,
+    "last_content_update" : 1566861053808,
+    "path" : "~/Desktop/IRP/Aula5/Aula5.R",
+    "project_path" : "Aula5.R",
+    "properties" : {
+        "cursorPosition" : "52,0",
+        "scrollLine" : "3"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
