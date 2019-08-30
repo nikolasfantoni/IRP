@@ -1,4 +1,8 @@
+#Universidade Federal de Minas Gerais
+#Introducao ao Reconhecimento de Padroes
+#Nikolas Dias Magalhaes Fantoni
 #AULA 6 - Base Spam
+#2019/2
 
 #Limpando o ambiente
 rm(list=ls())
@@ -81,7 +85,9 @@ for (j in 1:10){
 
 #Imprimindo a saida
 cat("\n acuracia classe 1: [", acuracia1, "]\n", 
-    "acuracia classe 2: [", acuracia2, "]\n", "media1: ", 
+    "acuracia classe 2: [", acuracia2, "]\n\n", "media1: ", 
     mean(acuracia1)*100,"%  media2: ", mean(acuracia2)*100, "%",
     "\n", "desvio1: ", sd(acuracia1)*100,"%  desvio2: ", 
     sd(acuracia2)*100,"%", "\n\n")
+cat("\n\nAcuracia total: ", mean(c(acuracia1,acuracia2))*100, 
+    "% e Desvio Padrao Total: ", sd(c(acuracia1, acuracia2))*100, "%.\n\n")

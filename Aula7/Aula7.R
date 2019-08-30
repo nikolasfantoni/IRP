@@ -5,7 +5,6 @@
 #2019/2
 
 
-######CODIGO DO EX 6######
 #Limpando o ambiente
 rm(list=ls())
 
@@ -21,9 +20,12 @@ kmeans1 <- function(X, k, c){
   c <- X[iseq,]
   newc <- NULL
   while(newc != c){
-    for (i in 1:length(X[iseq,])){
-      eucdist(X[i,], c)
+    for (i in 1:length(X[,1])){
+     for (j in 1:length(c)){
+       
+       dist <- if (eucdist(X[i,], c[j,]) < dist 
     }
+   }
   }
 }
 
