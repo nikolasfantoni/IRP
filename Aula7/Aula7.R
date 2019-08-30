@@ -12,6 +12,21 @@ rm(list=ls())
 #Adicionando biblioteca
 library(caret)
 
+eucdist <- function(m, n){
+  sqrt(sum((m-n)^2))
+}
+
+kmeans1 <- function(X, k, c){
+  iseq <- sample(length(X[,1]), k)
+  c <- X[iseq,]
+  newc <- NULL
+  while(newc != c){
+    for (i in 1:length(X[iseq,])){
+      eucdist(X[i,], c)
+    }
+  }
+}
+
 #Funcao estimativa densidade para n variáveis
 pdfnvar <- function(x, m, K, n) {
   if (det(K) == 0) 999999999 else (1/(sqrt((2*pi)^(n)*(det(K)))))*exp(-0.5*(t(x-m)%*%(solve(K))%*%(x-m)))
