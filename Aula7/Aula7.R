@@ -9,80 +9,88 @@
 rm(list=ls())
 
 #Adicionando biblioteca
-library(caret)
+#library(caret)
 
-eucdist <- function(m, n){
-  sqrt(sum((m-n)^2))
+eucdist <- function(x,y){
+  sqrt(sum((x-y)^2))
 }
 
-kmeans1 <- function(X, k, c){
-  iseq <- sample(length(X[,1]), k)
-  c <- X[iseq,]
-  newc <- NULL
-  while(newc != c){
+#Criando dados
+s1 <- 0.3
+s2 <- 0.3
+s3 <- 0.3
+s4 <- 0.3
+nc <- 100
+xc1 <- matrix(rnorm( nc*2 ) , ncol=2)*s1 +
+  t (matrix( c ( 2 , 2 ) ,nrow=2,ncol=nc ) )
+xc2 <- matrix(rnorm( nc*2 ) , ncol=2)*s2 +
+  t (matrix( c ( 4 , 4 ) ,nrow=2,ncol=nc ) )
+xc3 <- matrix(rnorm( nc*2 ) , ncol=2)*s3 +
+  t (matrix( c ( 2 , 4 ) ,nrow=2,ncol=nc ) )
+xc4 <- matrix(rnorm( nc*2 ) , ncol=2)*s4 +
+  t (matrix( c ( 4 , 2 ) ,nrow=2,ncol=nc ) )
+plot(c(xc1[,1], xc2[,1], xc3[,1], xc4[,1]), c(xc1[,2], xc2[,2], xc3[,2], xc4[,2]))
+
+X <- rbind(xc1, xc2, xc3, xc4)
+k <- 4
+iseq <- sample(length(X[,1]), k)
+centroid <- X[iseq,]
+oldc <- centroid+1
+distnow <- NULL
+distancia <- NULL
+
+iteracao <- 0
+minimos <- NULL
+oldminimos <- 1
+
+  while(all.equal(minimos,oldminimos) != TRUE){
+    iteracao <- iteracao+1
+    cat(iteracao,"\n")
+    if (iteracao == 1000) break
     for (i in 1:length(X[,1])){
-     for (j in 1:length(c)){
-       
-       dist <- if (eucdist(X[i,], c[j,]) < dist 
+     for (j in 1:length(centroid[,1])){
+       distnow[j] <- eucdist(X[i,],centroid[j,])
+     }
+      distancia <- rbind(distancia,distnow)
     }
-   }
-  }
+oldminimos <- minimos
+for (i in 1:400){
+minimos[i] <- which(distancia[i,] == min(distancia[i,]))
 }
 
-#Funcao estimativa densidade para n variáveis
-pdfnvar <- function(x, m, K, n) {
-  if (det(K) == 0) 999999999 else (1/(sqrt((2*pi)^(n)*(det(K)))))*exp(-0.5*(t(x-m)%*%(solve(K))%*%(x-m)))
-}
-
-#Lendo os dados
-spam <- read.csv( "spambase.data", sep=",",header = FALSE)
-ic1 <- which(spam$V58 == 1)
-ic2 <- which(spam$V58 == 0)
-spamc1 <- spam[ic1,]
-spamc2 <- spam[ic2,]
-
-#Criando os folds que separao os dados
-fl1 <- createFolds(spamc1[,1], k = 10, list = TRUE, returnTrain = FALSE)
-fl2 <- createFolds(spamc1[,1], k = 10, list = TRUE, returnTrain = FALSE)
-
-#Looping para os 10 testes
-acuraciaacumulada <- NULL
-for (j in 1:10){
-  test <- rbind(spamc1[fl1[[j]],],spamc1[fl1[[j]],])
-  trainc1 <- spamc1[-fl1[[j]],]
-  trainc2 <- spamc2[-fl1[[j]],]
-  
-  #Calculando as medias
-  u1<- NULL
-  u2<- NULL
-  for (m in 1:57){
-    u1 <- rbind(u1, mean(trainc1[,m]))
-    u2 <- rbind(u2, mean(trainc2[,m]))
-  }
-  
-  #Covariancias dos dados
-  cov1 <- cov(trainc1[,1:57])
-  cov2 <- cov(trainc2[,1:57])
-  
-  #Testando o algoritmo
-  erro <- 0
-  for (i in 1:length(test[,1])){
-    l <- t(test[i,1:57])
-    f1 <- pdfnvar(l, u1 , cov1, 57)
-    f2 <- pdfnvar(l, u2 , cov2, 57)
-    if (f2 == 0){
-      c <- 1
-    } else {
-      c <- if ((f1/f2 >= 1) == TRUE) 1 else 0
-      if ((c-test[i,58]) != 0) erro <- erro +1
+for (i in 1:k){
+  pos <- NULL
+  pos <- which(minimos == i)
+  if (!is.null(pos)){
+    for (j in 1:length(X[1,])){
+      centroid[i,j] <- mean(X[pos,j])
     }
+  } else {
+    centroid[i] <- X[sample(1:length(X[,1]),1),]
   }
-  
-  #Obtendo a acuracia 
-  acerto <- 1 - erro/length(test[,1])
-  acuraciaacumulada <- c(acuraciaacumulada, acerto)
 }
 
-#Imprimindo a saida
-cat("\n acuracia: [", acuraciaacumulada, "]\n", "media: ", 
-    mean(acuraciaacumulada)*100,"%", "\n", "desvio: ", sd(acuraciaacumulada)*100,"%","\n\n")
+}
+
+#Plotando resultados
+pronto <- cbind(X,minimos)
+classe1 <- pronto[which(pronto[,3] == 1),]
+classe2 <- pronto[which(pronto[,3] == 2),]
+classe3 <- pronto[which(pronto[,3] == 3),]
+classe4 <- pronto[which(pronto[,3] == 4),]
+
+plot(classe1[,1], classe1[,2], col="red",  xlim = c(0,6),ylim = c(0,6),xlab = '' ,ylab= '' )
+par(new="T")
+plot(classe2[,1], classe2[,2], col="blue",  xlim = c(0,6),ylim = c(0,6),xlab = '' ,ylab= '' )
+par(new="T")
+plot(classe3[,1], classe3[,2], col="orange",  xlim = c(0,6),ylim = c(0,6),xlab = '' ,ylab= '' )
+par(new="T")
+plot(classe4[,1], classe4[,2], col="green",  xlim = c(0,6),ylim = c(0,6),xlab = '' ,ylab= '' )
+par(new="T")
+plot(centroid[1,1], centroid[1,2], col="red",  xlim = c(0,6),ylim = c(0,6),xlab = '' ,ylab= '', pch=15 )
+par(new="T")
+plot(centroid[2,1], centroid[2,2], col="blue",  xlim = c(0,6),ylim = c(0,6),xlab = '' ,ylab= '', pch=15 )
+par(new="T")
+plot(centroid[3,1], centroid[3,2], col="orange",  xlim = c(0,6),ylim = c(0,6),xlab = '' ,ylab= '', pch=15 )
+par(new="T")
+plot(centroid[4,1], centroid[4,2], col="green",  xlim = c(0,6),ylim = c(0,6),xlab = '' ,ylab= '', pch=15 )
