@@ -8,12 +8,13 @@
 #Limpando o ambiente
 rm(list=ls())
 
-#Adicionando biblioteca
-#library(caret)
-
+#Funcao de distancia euclidiana
 eucdist <- function(x,y){
   sqrt(sum((x-y)^2))
 }
+
+#Definindo o numero de clusters
+k <- 4
 
 #Criando dados
 s1 <- 0.3
@@ -32,7 +33,6 @@ xc4 <- matrix(rnorm( nc*2 ) , ncol=2)*s4 +
 plot(c(xc1[,1], xc2[,1], xc3[,1], xc4[,1]), c(xc1[,2], xc2[,2], xc3[,2], xc4[,2]))
 
 X <- rbind(xc1, xc2, xc3, xc4)
-k <- 4
 iseq <- sample(length(X[,1]), k)
 centroid <- X[iseq,]
 oldc <- centroid+1
@@ -41,23 +41,22 @@ distancia <- NULL
 
 iteracao <- 0
 minimos <- NULL
-oldminimos <- 1
+newc<-NULL
 
-  while(all.equal(minimos,oldminimos) != TRUE){
+  while(all.equal(newc, centroid) != TRUE){
     iteracao <- iteracao+1
     cat(iteracao,"\n")
-    if (iteracao == 1000) break
+    if (iteracao == 100) break
     for (i in 1:length(X[,1])){
      for (j in 1:length(centroid[,1])){
        distnow[j] <- eucdist(X[i,],centroid[j,])
      }
       distancia <- rbind(distancia,distnow)
     }
-oldminimos <- minimos
 for (i in 1:400){
 minimos[i] <- which(distancia[i,] == min(distancia[i,]))
 }
-
+newc <- centroid
 for (i in 1:k){
   pos <- NULL
   pos <- which(minimos == i)
