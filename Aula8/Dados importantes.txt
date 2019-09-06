@@ -1,0 +1,3 @@
+k = 22
+
+nao encontrou errado para media 2% acima ou abaixo na hora de classificar
