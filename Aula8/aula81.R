@@ -22,11 +22,12 @@ plot(X)
 errado <- 1
 k<-4
 
+#k-means
 while (errado != 0 && k < 40){
   errado <- 0
   k <- k+1
   
-  w <- kmeans(X$x,k,iter.max = 10)
+  w <- kmeans(X$x,k,iter.max = 20)
   media <- NULL
   as.numeric(X$classes)
   
