@@ -1,7 +1,7 @@
 #Universidade Federal de Minas Gerais
 #Introducao ao Reconhecimento de Padroes
 #Nikolas Dias Magalhaes Fantoni
-#AULA 9 - Misturas
+#AULA 9 - Misturas (parte 1)
 #2019/2
 
 #Limpando o ambiente
@@ -14,10 +14,9 @@ library('plot3D')
 
 #Criando dados
 nc <- 1000
-X<-mlbench.spirals(nc,cycles=1, sd=0.05)
+Y<-mlbench.spirals(nc,cycles=1, sd=0.055)
 classes <- 2
-X <- cbind(X$x, X$classes)
-plot(X)
+X <- cbind(Y$x, Y$classes)
 fl <- createFolds(X[,1], k = 10, list = TRUE, returnTrain = FALSE)
 
 #Looping para os 10 testes
@@ -128,8 +127,8 @@ mean(acuracia)
 sd(acuracia)
 
 #estimando as densidades de um grid
-seqi<-seq(-0.98,1,0.02)
-seqj<-seq(-0.98,1,0.02)
+seqi<-seq(-0.99,1,0.01)
+seqj<-seq(-0.99,1,0.01)
 M <- matrix(0,nrow=length(seqi),ncol=length(seqj)) 
 c<-NULL
 ci <- 0
@@ -159,18 +158,27 @@ for (i in seqi){
   }
 }
 
+#plotando
+plot(Y, main="Dados de Entrada", xlim = c(-1,1),ylim = c(-1,1), xlab="x1", ylab="x2")
 
-png("fig1.png", width = 500, height = 500)
-plot(c2[[]][,1:2], main="Dados de Entrada", xlim = c(-1,1),ylim = c(-1,1), xlab="x1", ylab="x2", col="red")
-dev.off()
-
-png("fig2.png", width = 500, height = 500)
-contour2D(x=seqi, y=seqj, z=M, col='blue', xlim = c(-1,1),ylim = c(-1,1), xlab="x1", ylab="x2")
+plot(Y, main="Superfície de Separação", xlim = c(-1,1),ylim = c(-1,1), xlab="x1", ylab="x2")
 par(new=T)
-plot(X, main="Superfície de Separação", xlim = c(-1,1),ylim = c(-1,1), xlab="x1", ylab="x2")
-dev.off()
+contour2D(x=seqi, y=seqj, z=M, col='blue', xlim = c(-1,1),ylim = c(-1,1), xlab="x1", ylab="x2")
 
-sd(acuracia)
 
 image2D(M, x = seqi, y=seqj, col=c("black", "red"), 
-        colkey=(plot=FALSE),xlab = '' ,ylab= '', xlim = c(-1,1),ylim = c(-1,1), xaxs='i', yaxs='i' )
+        colkey=(plot=FALSE), xlim = c(-1,1),ylim = c(-1,1), xaxs='i', yaxs='i',
+        xlab="x1", ylab="x2", main ="Superfícies equivalentes das Classes")
+
+#clusters
+for (i in 1:k){
+  plot(clusters[[i]][,1],clusters[[i]][,2], col=cores[i],  xlim = c(-1.2,1.2),ylim = c(-1.2,1.2),
+       xlab = 'x1' ,ylab= 'x2', main="Divisão em k clusters" )
+  par(new="T")
+}
+
+for (i in 1:k){
+  plot(w$centers[,1],w$centers[,2], col='black',  xlim = c(-1.2,1.2),ylim = c(-1.2,1.2), pch=3,
+       xlab = '' ,ylab= '' )
+  par(new="T")
+}
