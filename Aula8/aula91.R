@@ -127,5 +127,7 @@ for (j in 1:10){
   acuracia <- c(acuracia,(100*(1-(erro/length(test[,3])))))
 }
 
+
+acuracia
 mean(acuracia)
 sd(acuracia)
