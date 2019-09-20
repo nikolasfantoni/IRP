@@ -1,7 +1,7 @@
 #Universidade Federal de Minas Gerais
 #Introducao ao Reconhecimento de Padroes
 #Nikolas Dias Magalhaes Fantoni
-#AULA 11 e 12 - Misturas (parte 1)
+#AULA 11 e 12 - Espaço de Verossimilhanças (parte 1)
 #2019/2
 
 #Limpando o ambiente
@@ -11,34 +11,40 @@ rm(list=ls())
 library('caret')
 library('mlbench')
 library('plot3D')
+source('escolhefold.R')
 
 #Criando dados
 nc <- 1000
-Y<-mlbench.spirals(nc,cycles=1, sd=0.055)
+Y<-mlbench.spirals(nc,cycles=1, sd=0.05)
 classes <- 2
 X <- cbind(Y$x, Y$classes)
 fl <- createFolds(X[,1], k = 10, list = TRUE, returnTrain = FALSE)
-test <- X[fl[[1]],]
-train <- X[-fl[[1]],]
 
+#loop para definir o melhor fold
+acuracia <- NULL
+for (i in 1:10){
+  test <- X[fl[[i]],]
+  train <- X[-fl[[i]],]
 #Definindo constantes do teste
-errado <- 1
-k<-4
-
-#k-means
-while (errado != 0 && k < 40){
-  errado <- 0
-  k <- k+1
+  errado <- 1
+  k<-4
   
-  w <- kmeans(train[,1:2],k,iter.max = 20)
-  media <- NULL
-
-  for (i in 1:k){
-    newseq <- which(w$cluster==i)
-    media <- mean(as.numeric(train[newseq,3]))
-    if (media > as.numeric(train[newseq[1],3])*1.02 || media < as.numeric(train[newseq[1],3])*0.98) errado <- errado + 1
+#k-means
+  while (errado != 0 && k < 40){
+    errado <- 0
+    k <- k+1
+    
+    w <- kmeans(train[,1:2],k,iter.max = 20)
+    media <- NULL
+  
+    for (i in 1:k){
+      newseq <- which(w$cluster==i)
+      media <- mean(as.numeric(train[newseq,3]))
+      if (media > as.numeric(train[newseq[1],3])*1.02 || media < as.numeric(train[newseq[1],3])*0.98) errado <- errado + 1
+    }
   }
-}
+  
+
 
 ##############################################
 
@@ -119,6 +125,8 @@ for (i in 1:length(test[,1])){
     if ((c-test[i,3]) != 0) erro <- erro +1
   }
 }
+acuracia <- c(acuracia, erro/length(test[,1]))
+}
 
 #plotando
 cores <- rainbow(k)
@@ -136,6 +144,7 @@ for (i in 1:k){
        xlab = '' ,ylab= '' )
   par(new="T")
 }
+par(new="F")
 
 #Espaço Verossemelhança
 for (i in 1:length(f1t)){
@@ -146,7 +155,7 @@ par(new="T")
 par(new="F")
 
 #Curva de Separacao
-iseq <- seq(0.1,3,0.1)
+iseq <- seq(0,3,0.01)
 jseq <- (totalc1/totalc2)*iseq
 for (i in 1:length(f1t)){
   if (f1t[i]<=f2t[i]) plot(f1t[i], f2t[i], col="red", xlim=c(0,3), ylim=c(0,3.2), xlab="p(x|C1)", ylab="p(x|C2)")

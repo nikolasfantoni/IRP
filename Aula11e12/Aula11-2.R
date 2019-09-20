@@ -1,7 +1,7 @@
 #Universidade Federal de Minas Gerais
 #Introducao ao Reconhecimento de Padroes
 #Nikolas Dias Magalhaes Fantoni
-#AULA 11 e 12 - Misturas (parte 2)
+#AULA 11 e 12 - Espaço de Verossimilhanças (parte 2)
 #2019/2
 
 #Limpando o ambiente
@@ -153,19 +153,19 @@ for (i in 1:length(test[,1])){
 
 #Espaço Verossemelhanca
 for (i in 1:length(f1t)){
-  if (f1t[i]<=f2t[i]) plot(f1t[i], f2t[i], xlim=c(10^(-18),6*10^(-4)),ylim=c(10^(-20), 6*10^(-9)), col="red", xlab="p(x|C1)", ylab="p(x|C2)")
-  if (f2t[i]<f1t[i]) plot(f1t[i], f2t[i], xlim=c(10^(-18),6*10^(-4)),ylim=c(10^(-20), 6*10^(-9)), col="blue", xlab="p(x|C1)", ylab="p(x|C2)")
+  if (f1t[i]<=f2t[i]) plot(f1t[i], f2t[i], xlim=c(10^(-18),6*10^(-4)),ylim=c(10^(-20), 5*10^(-9)), col="red", xlab="p(x|C1)", ylab="p(x|C2)")
+  if (f2t[i]<f1t[i]) plot(f1t[i], f2t[i], xlim=c(10^(-18),6*10^(-4)),ylim=c(10^(-20), 5*10^(-9)), col="blue", xlab="p(x|C1)", ylab="p(x|C2)")
   par(new="T")
 }
 par(new="F")
 
 #Curva de Separacao
-iseq <- seq(0.0000001,0.0006,10^(-6))
+iseq <- seq(0.0000001,0.0005,10^(-6))
 jseq <- (totalc1/totalc2)*iseq*10^(-5)
 for (i in 1:length(f1t)){
-  if (f1t[i]<=f2t[i]) plot(f1t[i], f2t[i], col="red", xlim=c(10^(-18),6*10^(-4)),ylim=c(10^(-20), 6*10^(-9)), xlab="p(x|C1)", ylab="p(x|C2)")
-  if (f2t[i]<f1t[i]) plot(f1t[i], f2t[i], col="blue", xlim=c(10^(-18),6*10^(-4)),ylim=c(10^(-20), 6*10^(-9)), xlab="p(x|C1)", ylab="p(x|C2)")
+  if (f1t[i]<=f2t[i]) plot(f1t[i], f2t[i], col="red", xlim=c(10^(-18),6*10^(-4)),ylim=c(10^(-20), 5*10^(-9)), xlab="p(x|C1)", ylab="p(x|C2)")
+  if (f2t[i]<f1t[i]) plot(f1t[i], f2t[i], col="blue", xlim=c(10^(-18),6*10^(-4)),ylim=c(10^(-20), 5*10^(-9)), xlab="p(x|C1)", ylab="p(x|C2)")
   par(new="T")
 }
-plot(iseq,jseq,xlim=c(10^(-18),6*10^(-4)),ylim=c(10^(-20), 6*10^(-9)), xlab="p(x|C1)", ylab="p(x|C2)")
+plot(iseq,jseq,xlim=c(10^(-18),6*10^(-4)),ylim=c(10^(-20), 5*10^(-9)), xlab="p(x|C1)", ylab="p(x|C2)")
 par(new="F")
