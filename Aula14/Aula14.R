@@ -1,7 +1,7 @@
 #Universidade Federal de Minas Gerais
 #Introducao ao Reconhecimento de Padroes
 #Nikolas Dias Magalhaes Fantoni
-#AULA 13 - KDE
+#AULA 14 - SVM
 #2019/2
 
 #Limpando o ambiente
@@ -39,7 +39,7 @@ acuracia <- NULL
 for (ii in 1:10){
   test <- X[fl[[ii]],]
   train <- X[-fl[[ii]],]
-
+  
   C1 <- train[which(train[,3]==1),]
   C2 <- train[which(train[,3]==2),]
   k <- test[,1:2]
@@ -78,8 +78,8 @@ for (i in seqi){
     cj <- cj+1
     f1 <- NULL
     f2 <- NULL
-      f1<- kde(c(i,j), C1, h1)
-      f2<- kde(c(i,j), C2, h2)
+    f1<- kde(c(i,j), C1, h1)
+    f2<- kde(c(i,j), C2, h2)
     if (f2 == 0){
       c <- 1
     } else {
