@@ -67,7 +67,7 @@ for (ii in 1:10){
 
 #estimando as densidades de um grid
 seqi<-seq(-0.995,1,0.005)
-seqj<-seq(-0.9,1,0.1)
+seqj<-seq(-0.995,1,0.005)
 M <- matrix(0,nrow=length(seqi),ncol=length(seqj)) 
 c<-NULL
 ci <- 0
@@ -90,11 +90,16 @@ for (i in seqi){
 }
 
 #plotando
-#plot(X, main="Dados de Entrada", xlim = c(-1,1),ylim = c(-1,1), xlab="x1", ylab="x2")
+#plot(Y, main="Dados de Entrada", xlim = c(-1,1),ylim = c(-1,1), xlab="x1", ylab="x2")
 
 #Plotando Superficie de Separacao
 plot(Y, main="Superfície de Separação", xlim = c(-1,1),ylim = c(-1,1), xlab="x1", ylab="x2")
 par(new=T)
 contour(x=seqi, y=seqj, z=M, col='blue', xlim = c(-1,1),ylim = c(-1,1), xlab="x1", ylab="x2")
+
+#Superficie de Separacao 3D
+persp3D(seqi,seqj,M,counter=T,theta = 55, phi = 30, r = 40,
+        d = 0.1, expand = 0.5, ltheta = 90, lphi = 180, shade = 0.4,
+        ticktype = "detailed", nticks=5)
 
 cat(acuracia,"\n")
