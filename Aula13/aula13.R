@@ -51,10 +51,12 @@ for (ii in 1:10){
   Q3 <- as.numeric(quantile(C2))[4]
   Q1 <- as.numeric(quantile(C2))[2]
   h2 <- 0.9*(min(((Q3-Q1)/1.349),sd(C2)))*(length(C2[,1])^(-0.2))
+  pcall <- NULL
   classes <- NULL
   for (jj in 1:length(test[,1])){
     pc1 <- kde(x1 = test[jj,1:2],C1,h1)
     pc2 <- kde(x1 = test[jj,1:2],C2,h2)
+    pcall <- rbind(pcall,c(pc1,pc2))
     if ((pc1/pc2) >=1) classes <- c(classes,1)
     else classes <- c(classes,2)
   }
@@ -90,7 +92,7 @@ for (i in seqi){
 }
 
 #plotando
-#plot(Y, main="Dados de Entrada", xlim = c(-1,1),ylim = c(-1,1), xlab="x1", ylab="x2")
+plot(Y, main="Dados de Entrada", xlim = c(-1,1),ylim = c(-1,1), xlab="x1", ylab="x2")
 
 #Plotando Superficie de Separacao
 plot(Y, main="Superfície de Separação", xlim = c(-1,1),ylim = c(-1,1), xlab="x1", ylab="x2")
@@ -102,4 +104,14 @@ persp3D(seqi,seqj,M,counter=T,theta = 55, phi = 30, r = 40,
         d = 0.1, expand = 0.5, ltheta = 90, lphi = 180, shade = 0.4,
         ticktype = "detailed", nticks=5)
 
+#Plotando espaço verossimilhança
+pc1plot <- pcall[which(pcall[,1]>=pcall[,2]),]
+pc2plot <- pcall[which(pcall[,1]<pcall[,2]),]
+plot(pc1plot[,1],pc1plot[,2],col='blue',xlim = c(0,1.2),ylim = c(0,1.2),xlab="p(x|C1)", ylab="p(x|C2)")
+par(new=T)
+plot(pc2plot[,1],pc2plot[,2],col='red',xlim = c(0,1.2),ylim = c(0,1.2),xlab="p(x|C1)", ylab="p(x|C2)")
+seqplot <- seq(0,1.2,0.01)
+yplot <- length(pc2plot)/length(pc1plot)*seqplot
+par(new=T)
+plot(seqplot,yplot, type='l',,xlim = c(0,1.2),ylim = c(0,1.2),xlab="p(x|C1)", ylab="p(x|C2)")
 cat(acuracia,"\n")
