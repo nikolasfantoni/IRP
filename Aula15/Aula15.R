@@ -10,9 +10,8 @@ rm(list=ls())
 #Adicionando biblioteca
 library('caret')
 library('RnavGraphImageData')
-library('caTools')
-library('Rfast')
 library('naivebayes')
+library('e1071')
 
 # Carregando a Base de dados
 data(faces)
@@ -32,22 +31,31 @@ y <- NULL
 for(i in 1:nrow(faces) ){
   y <- c( y, ((i-1) %/% 10) + 1 )
 }
-split <-  sample.split(1:400, SplitRatio=0.5)
-datatrain <- subset(datain,split==TRUE)
+rm(i)
+
+#Dividindo os dados
+fl <- createFolds(faces[,1], k = 4, list = TRUE, returnTrain = FALSE)
+datatest <- datain[fl[[1]],]
+datatrain <- datain[-fl[[1]],]
+datatrainclass <- y[-fl[[1]]]
+datatestclass <- y[fl[[1]]]
 colnames(datatrain) <- 1:4096
-datatrainclass <- y[which(split==TRUE)]
-datatest <- subset(datain,split==FALSE)
 colnames(datatest) <- 1:4096
-datatestclass <- y[which(split==FALSE)]
+rm(fl)
 
+#PCA
+#xm <- colMeans(datatrain)
+#Xinnorm <- datatrain - matrix(xm,nrow = nrow(datatrain),ncol=ncol(datatrain),byrow=T)
+#S <- cov(Xinnorm)
+#eigS <- eigen(S)
+#u <- eigen$ve
 
-#pca <- preProcess(datatrain, method=c("BoxCox", "center", "scale", "pca"))
-pca<-preProcess(datatrain,method="pca",pcaComp=80)
-#pca <- prcomp(x = datatrain,center = TRUE, scale. = TRUE)
-pca_train <- predict(pca, datatrain)
-pca_test <- predict(pca, datatest)
-a <- gaussian_naive_bayes(x=pca_train, as.factor(datatrainclass))
-previsto <- predict(a,pca_test)
-cm <- confusionMatrix(previsto,as.factor(datatestclass))
-overall <- cm$overall
-cat("Thresh = ", mm, ", Acuracia: ", overall[1]*100, "\n")
+#PCA com pacote
+pca <- prcomp(datatrain,center = TRUE, scale. = FALSE, tol=0.1)
+pca_train <- predict(pca,datatrain)
+pca_test <- predict(pca,datatest)
+model <- naive_bayes(pca_train,factor(datatrainclass))
+found <- predict(model,pca_test)
+acuracia <- sum(diag(table(found,factor(datatestclass))))/length(datatestclass)
+cat( "Acuracia: ", acuracia*100,"%.\n")
+
