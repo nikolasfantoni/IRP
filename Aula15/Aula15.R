@@ -34,28 +34,41 @@ for(i in 1:nrow(faces) ){
 rm(i)
 
 #Dividindo os dados
-fl <- createFolds(faces[,1], k = 4, list = TRUE, returnTrain = FALSE)
+fl <- createFolds(faces[,1], k = 2, list = TRUE, returnTrain = FALSE)
 datatest <- datain[fl[[1]],]
 datatrain <- datain[-fl[[1]],]
 datatrainclass <- y[-fl[[1]]]
 datatestclass <- y[fl[[1]]]
 colnames(datatrain) <- 1:4096
 colnames(datatest) <- 1:4096
-rm(fl)
+rm(fl, datain, y, faces)
 
 #PCA
-#xm <- colMeans(datatrain)
-#Xinnorm <- datatrain - matrix(xm,nrow = nrow(datatrain),ncol=ncol(datatrain),byrow=T)
-#S <- cov(Xinnorm)
-#eigS <- eigen(S)
-#u <- eigen$ve
+xm <- colMeans(datatrain)
+Xinnorm <- datatrain - matrix(xm,nrow = nrow(datatrain),ncol=ncol(datatrain),byrow=T)
+S <- cov(Xinnorm)
+eigS <- eigen(S)
+u <- eigS$vectors
+v <- eigS$values
+rm(v,eigS,S,Xinnorm, xm)
+
+#Classificador
+autovetores <- u[,-(10:4096)]
+datatrain <- datatrain - matrix(colMeans(datatrain),nrow = nrow(datatrain),ncol=ncol(datatrain),byrow=T)
+pca_datain <- datatrain %*% autovetores
+datatest <- datatest - matrix(colMeans(datatest),nrow = nrow(datatest),ncol=ncol(datatest),byrow=T)
+pca_datatest <- datatest %*% autovetores
+model <- naiveBayes(pca_datain,factor(datatrainclass))
+found <- predict(model,pca_datatest)
+acuracia <- sum(diag(table(found,factor(datatestclass))))/length(datatestclass)
+cat("Acuracia: ", acuracia*100,"%.\n")
 
 #PCA com pacote
-pca <- prcomp(datatrain,center = TRUE, scale. = FALSE, tol=0.1)
-pca_train <- predict(pca,datatrain)
-pca_test <- predict(pca,datatest)
-model <- naive_bayes(pca_train,factor(datatrainclass))
-found <- predict(model,pca_test)
-acuracia <- sum(diag(table(found,factor(datatestclass))))/length(datatestclass)
-cat( "Acuracia: ", acuracia*100,"%.\n")
+#pca <- prcomp(datatrain,center = TRUE, scale. = FALSE, tol=0.1)
+#pca_train <- predict(pca,datatrain)
+#pca_test <- predict(pca,datatest)
+#model <- naive_bayes(pca_train,factor(datatrainclass))
+#found <- predict(model,pca_test)
+#acuracia <- sum(diag(table(found,factor(datatestclass))))/length(datatestclass)
+#cat( "Acuracia: ", acuracia*100,"%.\n")
 
