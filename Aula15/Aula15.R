@@ -34,15 +34,16 @@ for(i in 1:nrow(faces) ){
 }
 rm(i)
 
+act <- NULL
+for (l in 1:10){
 #Dividindo os dados
-fl <- createFolds(faces[,1], k = 5, list = TRUE, returnTrain = FALSE)
+fl <- createFolds(faces[,1], k = 4, list = TRUE, returnTrain = FALSE)
 datatest <- datain[fl[[1]],]
 datatrain <- datain[-fl[[1]],]
 datatrainclass <- y[-fl[[1]]]
 datatestclass <- y[fl[[1]]]
 colnames(datatrain) <- 1:4096
 colnames(datatest) <- 1:4096
-rm(fl, datain, y, faces)
 
 #PCA
 xm <- colMeans(datatrain)
@@ -51,11 +52,15 @@ S <- cov(Xinnorm)
 eigS <- eigen(S)
 u <- eigS$vectors
 v <- eigS$values
-rm(v,eigS,S,Xinnorm, xm)
+s <- 0
+k<- 0
+while (s < 0.98){
+k <- k+1
+  s <- sum(v[1:k])/sum(v)
+}
 
-for (g in 3:100){
 #Preparando pra Classificação
-autovetores <- u[,-(g:4096)]
+autovetores <- u[,-((k+1):4096)]
 datatrain <- datatrain - matrix(colMeans(datatrain),nrow = nrow(datatrain),ncol=ncol(datatrain),byrow=T)
 pca_datain <- datatrain %*% autovetores
 datatest <- datatest - matrix(colMeans(datatest),nrow = nrow(datatest),ncol=ncol(datatest),byrow=T)
@@ -80,8 +85,16 @@ for (jj in 1:length(pca_datatest[,1])){
 }
 erro <- length(which((classificacao-datatestclass)!=0))
 acuracia <- 1-erro/length(datatestclass)
-cat("grupos: ", g, "Acuracia: ", acuracia*100,"%.\n")
+act <- c(act,acuracia)
+cat("K vale: ", k, "Acuracia: ", acuracia*100,"%.\n")
 }
+
+#Criando matriz de confusão e exportando
+cm <- confusionMatrix(factor(classificacao),factor(datatestclass))
+write.csv(as.table(cm),file="cm.csv")
+tocsv <- data.frame(cbind(t(cm$overall),t(cm$byClass)))
+write.csv(tocsv,file="cm.csv")
+
 #Classificador Bayesiano
 #model <- naiveBayes(pca_datain,factor(datatrainclass))
 #found <- predict(model,pca_datatest)
