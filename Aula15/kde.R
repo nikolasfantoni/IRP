@@ -1,4 +1,3 @@
-
 #Função KDE
 kde <- function(x1, data, h){
   n <- length(data[1,])

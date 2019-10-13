@@ -12,6 +12,7 @@ library('caret')
 library('RnavGraphImageData')
 library('naivebayes')
 library('e1071')
+source('kde.R')
 
 # Carregando a Base de dados
 data(faces)
@@ -52,16 +53,49 @@ u <- eigS$vectors
 v <- eigS$values
 rm(v,eigS,S,Xinnorm, xm)
 
-#Classificador
-autovetores <- u[,-(10:4096)]
+for (m in 51:100){
+#Preparação para os classificadores
+autovetores <- u[,-(m:4096)]
 datatrain <- datatrain - matrix(colMeans(datatrain),nrow = nrow(datatrain),ncol=ncol(datatrain),byrow=T)
-pca_datain <- datatrain %*% autovetores
+pca_datatrain <- datatrain %*% autovetores
 datatest <- datatest - matrix(colMeans(datatest),nrow = nrow(datatest),ncol=ncol(datatest),byrow=T)
 pca_datatest <- datatest %*% autovetores
-model <- naiveBayes(pca_datain,factor(datatrainclass))
-found <- predict(model,pca_datatest)
-acuracia <- sum(diag(table(found,factor(datatestclass))))/length(datatestclass)
-cat("Acuracia: ", acuracia*100,"%.\n")
+
+#PCA com KDE
+C <- list()
+h <- list()
+for (i in 1:nlevels(factor(datatrainclass))){
+  C[[i]] <- pca_datatrain[which(datatrainclass == i),]
+  Q3 <- as.numeric(quantile(C[[i]]))[4]
+  Q1 <- as.numeric(quantile(C[[i]]))[2]
+  if (is.null(dim(C[[i]][1]))){
+    dimensao <- length(C[[i]])
+  } else {
+    dimensao <- dim(C[[i]][1])
+  }
+  h[[i]] <- 0.9*(min(((Q3-Q1)/1.349),sd(C[[i]])))*(dimensao^(-0.2))
+}
+
+
+classificacao <- vector()
+for (i in 1:dim(pca_datatest)[1]){
+  pc <- NULL
+  for (jj in 1:nlevels(factor(datatrainclass))){
+    pc <- c(pc,kde(x1 = pca_datatest[i,],C[[jj]],h[[jj]]))
+  }
+  classificacao <- c(classificacao,min(which(pc == min(max(pc)))))
+}
+
+k <- table(factor(datatestclass),factor(classificacao))
+acuracia <- sum(diag(k)/length(datatestclass))
+cat("m: ",m, "Acuracia: ", acuracia*100,"%.\n")
+}
+
+#PCA sem pacote
+#model <- naiveBayes(pca_datain,factor(datatrainclass))
+#found <- predict(model,pca_datatest)
+#acuracia <- sum(diag(table(found,factor(datatestclass))))/length(datatestclass)
+#cat("Acuracia: ", acuracia*100,"%.\n")
 
 #PCA com pacote
 #pca <- prcomp(datatrain,center = TRUE, scale. = FALSE, tol=0.1)
