@@ -9,6 +9,7 @@ rm(list=ls())
 
 #Adicionando biblioteca
 library('caret')
+library('kernlab')
 source('ReLU.R')
 source('maxPool.R')
 source('CriaBase.R')
@@ -26,23 +27,72 @@ MostraImagem <- function( x ){
   return(img)
 }
 
-#Cria Imagem de Teste
-teste <- matrix(-1,ncol=9,nrow=9)
-i <- c(3,3,3,4,4,4,5,5,6,6,6,7,7,7)
-j <- c(2,3,7,3,4,6,4,5,3,5,6,2,6,7)
-for (n in 1:14){
-  teste[i[n],j[n]]<-1
+#Cria Imagem de Teste X
+#imgteste <- matrix(-1,ncol=9,nrow=9)
+#i <- c(3,3,3,4,4,4,5,5,6,6,6,7,7,7)
+#j <- c(2,3,7,3,4,6,4,5,3,5,6,2,6,7)
+#for (n in 1:length(i)){
+#  imgteste[i[n],j[n]]<-1
+#}
+
+#Cria Imagem de Teste C
+imgteste <- matrix(-1,ncol=9,nrow=9)
+i <- c(3,3,3,2,3,4,5,6,6,7,7,7,7,7)
+j <- c(3,4,5,6,7,3,3,3,4,3,4,5,6,7)
+for (n in 1:length(i)){
+  imgteste[i[n],j[n]]<-1
+}
+imgteste <- MostraImagem(imgteste)
+
+#Definição dos filtros
+tf<-3
+f <- list()
+f[[1]] <-  matrix(c(1,-1,-1,-1,1,-1,-1,-1,1),nrow=tf, ncol = tf)
+f[[2]] <-  matrix(c(1,-1,1,-1,1,-1,1,-1,1),nrow=tf, ncol = tf)
+f[[3]] <-  matrix(c(1,1,1,1,-1,-1,1,-1,-1),nrow=tf, ncol = tf)
+f[[4]] <-  matrix(c(1,1,1,-1,-1,1,-1,-1,1),nrow=tf, ncol = tf)
+
+
+#Treina a CNN
+modelo <- NULL
+for (b in 1:length(base)){
+  vetores <- NULL
+  for (filtro in 1:length(f)){
+    imgconv <- convolucao(base[[b]],tf,f[[filtro]])
+    
+    #Aplica o reLU
+    imgrelu <- ReLU(imgconv)
+
+    #Aplica o Maxpool com um tamanho 2 e um stride de 2
+    imgmaxpool <- maxPool(imgrelu,2)
+
+    #Vetoriza a imagem
+    imgvetor <- c(imgmaxpool)
+    
+    vetores <- c(vetores,imgvetor)
+  }
+  modelo <- cbind(modelo,vetores)
+}
+y<-factor(c('x','x','x','x','x','c','c','c','c','c'))
+
+#Treinamento da Rede SVM
+svmtrain <- ksvm(x =t(modelo),y=y,type='C-bsvc',kernel='rbfdot',kpar=list(sigma=0.8),C=20)
+
+#Passa a amostra de testes na CNN
+vetores <- NULL
+for (filtro in 1:length(f)){
+  imgconv <- convolucao(imgteste,tf,f[[filtro]])
+  
+  #Aplica o reLU
+  imgrelu <- ReLU(imgconv)
+  
+  #Aplica o Maxpool com um tamanho 2 e um stride de 2
+  imgmaxpool <- maxPool(imgrelu,2)
+  
+  #Vetoriza a imagem
+  imgvetor <- c(imgmaxpool)
+  
+  vetores <- c(vetores,imgvetor)
 }
 
-tf<-3
-#Aplica a Convolucao
-f <- matrix(c(1,-1,-1,-1,1,-1,-1,-1,1),nrow=tf, ncol = tf)
-testeconv <- convolucao(base[[1]],tf,f)
-
-#Aplica o reLU
-K <- ReLU(M)
-K <- MostraImagem(K)
-
-#Aplica o Maxpool com um tamanho 2 e um stride de 2
-L <- maxPool(K,2)
-L <- MostraImagem(L)
+letra <- predict(svmtrain,matrix(vetores,nrow=1,ncol=64))

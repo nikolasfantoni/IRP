@@ -1,3 +1,8 @@
+#Função retorna uma lista com as 10 fotos pedidas para treinamento. 
+#Para acessá-las, coloca dados_treinamento <-CriaBase()
+#Foto 1 está em dados_treinamento[[1]], foto 2 está em dados_treinamento[[2]].....
+#As 5 pimeiras fotos são do X e as 5 últimas do C
+
 CriaBase <- function(){
   x1 <- matrix(data=-1,nrow=9,ncol=9)
   i1 <- c(2,3,4,5,6,7,8,2,3,4,5,6,7,8)
