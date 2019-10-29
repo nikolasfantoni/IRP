@@ -10,6 +10,7 @@ rm(list=ls())
 #Adicionando biblioteca
 library('caret')
 library('kernlab')
+library('plot.matrix')
 source('ReLU.R')
 source('maxPool.R')
 source('CriaBase.R')
@@ -28,12 +29,12 @@ MostraImagem <- function( x ){
 }
 
 #Cria Imagem de Teste X
-#imgteste <- matrix(-1,ncol=9,nrow=9)
-#i <- c(3,3,3,4,4,4,5,5,6,6,6,7,7,7)
-#j <- c(2,3,7,3,4,6,4,5,3,5,6,2,6,7)
-#for (n in 1:length(i)){
-#  imgteste[i[n],j[n]]<-1
-#}
+imgteste <- matrix(-1,ncol=9,nrow=9)
+i <- c(3,3,3,4,4,4,5,5,6,6,6,7,7,7)
+j <- c(2,3,7,3,4,6,4,5,3,5,6,2,6,7)
+for (n in 1:length(i)){
+  imgteste[i[n],j[n]]<-1
+}
 
 #Cria Imagem de Teste C
 imgteste <- matrix(-1,ncol=9,nrow=9)
